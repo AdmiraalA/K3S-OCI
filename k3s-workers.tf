@@ -1,5 +1,4 @@
 resource "oci_core_instance_pool" "k3s_workers" {
-
   depends_on = [
     oci_load_balancer_load_balancer.k3s_load_balancer,
   ]
@@ -79,10 +78,16 @@ resource "oci_core_instance" "k3s_extra_worker_node" {
     nsg_ids                   = [oci_core_network_security_group.lb_to_instances_http.id]
     hostname_label            = "k3s-extra-worker-node"
   }
+ instance_options {
+    are_legacy_imds_endpoints_disabled = true
+  }
+ launch_options {
+    is_pv_encryption_in_transit_enabled = true
+  }
 
-  metadata = {
-    "ssh_authorized_keys" = file(var.public_key_path)
-    "user_data"           = data.cloudinit_config.k3s_worker_tpl.rendered
+ metadata = {
+    "ssh_authorized_keys"            = var.ssh_authorized_keys_content
+    "user_data"                      = data.cloudinit_config.k3s_worker_tpl.rendered
   }
 
   freeform_tags = {
