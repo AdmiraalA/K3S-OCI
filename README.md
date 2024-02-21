@@ -12,8 +12,9 @@
 
 Deploy a Kubernetes cluster for free, using K3s and Oracle [always free](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm) resources.
 This is a rework , all credits for the original goes to Lorenzo Garuti. 
-My additions will be : Secure by default by design , better readability and compatible with both onsite Terraform and Terraform Cloud/Enterprise.
-Also included : Security scanning , CI/CD ( Terraform Cloud/Enterprise)
+My additions will be : Secure by design , better readability and compatible with both onsite Terraform and Terraform Cloud/Enterprise.
+Also included : Security scanning , CI/CD ( Terraform Cloud/Enterprise).
+Last but not least : Cloudflare addition , it will take the first IP of the public loadbalancer and publish an A-record on Cloudflare so it can be reachable by domain as well ( If applicable)
 
 # Table of Contents
 
