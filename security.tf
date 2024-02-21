@@ -1,8 +1,3 @@
-variable "public_ips" {
-  type    = list(string)
-  default = ["82.168.9.145/32", "86.85.108.82/32"]
-}
-
 resource "oci_core_default_security_list" "default_security_list" {
   compartment_id             = var.compartment_ocid
   manage_default_resource_id = oci_core_vcn.default_oci_core_vcn.default_security_list_id
