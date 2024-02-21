@@ -1,6 +1,6 @@
 variable "my_public_ip_cidr" {
   type    = list(string)
-  default = ["82.168.9.145/32", "86.85.108.82/32"]
+  default = ["x/32", "y/32"]
 }
 
 variable "private_key" {}
