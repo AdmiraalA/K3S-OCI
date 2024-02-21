@@ -29,7 +29,24 @@ jobs:
         
       - name: Upload SARIF file
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: github/codeql-action/upload-sarif@v2
         with:
           name: checkov-results
           path: ${{ github.workspace }}/results.sarif
+
+      - name: Close related pull requests
+        if: success()
+        run: |
+          # Extract issue IDs from the SARIF file
+          issue_ids=$(jq -r '.runs[].results[].locations[].physicalLocation.artifactLocation.uri' results.sarif | grep -oP '\d+$' | sort -u)
+          
+          # Close pull requests related to each issue
+          for issue_id in $issue_ids; do
+            # Fetch open pull requests related to the issue
+            pr_numbers=$(gh pr list --state=open --label="security-issue-$issue_id" --json=number -q ".[] | .number")
+
+            # Close each open pull request
+            for pr_number in $pr_numbers; do
+              gh pr close $pr_number --comment="This pull request is being closed because the related security issue has been fixed."
+            done
+          done
