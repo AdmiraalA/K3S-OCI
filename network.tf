@@ -1,6 +1,6 @@
 resource "oci_core_vcn" "default_oci_core_vcn" {
   cidr_block     = var.oci_core_vcn_cidr
-  compartment_id = var.compartment_ocid
+  compartment_ocid = var.compartment_ocid
   display_name   = "Default OCI core vcn"
   dns_label      = var.oci_core_vcn_dns_label
   freeform_tags = {
