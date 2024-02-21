@@ -1,5 +1,5 @@
 resource "oci_identity_dynamic_group" "compute_dynamic_group" {
-  compartment_id = var.tenancy_ocid
+  compartment_id = var.compartment_ocid
   description    = "Dynamic group which contains all instance in this compartment"
   matching_rule  = "All {instance.compartment.id = '${var.compartment_ocid}'}"
   name           = var.oci_identity_dynamic_group_name
