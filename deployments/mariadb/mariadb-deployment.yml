@@ -43,6 +43,14 @@ spec:
         volumeMounts:
         - name: "mariadb-persistent-storage"
           mountPath: "/var/lib/mysql/"
+        readinessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
       volumes:
       - name: mariadb-persistent-storage
         persistentVolumeClaim:
