@@ -20,6 +20,7 @@ spec:
       containers:
       - image: mariadb:latest
         name: mariadb
+        imagePullPolicy: Always
         env:
         - name: MYSQL_ROOT_PASSWORD
           value: ro0tP4sSworD
