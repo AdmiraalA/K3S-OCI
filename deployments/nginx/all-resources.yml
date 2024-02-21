@@ -425,6 +425,7 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: nginx
   labels:
     app: nginx
   name: nginx
