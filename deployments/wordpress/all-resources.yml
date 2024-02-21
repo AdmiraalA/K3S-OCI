@@ -33,6 +33,16 @@ spec:
       containers:
       - image: wordpress:php7.4-fpm
         name: wordpress
+        imagePullPolicy: Always
+        securityContext:
+          allowPrivilegeEscalation: false
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "500Mi"
+          requests:
+            cpu: "0.1"
+            memory: "100Mi"
         env:
         - name: WORDPRESS_DB_HOST
           value: mariadb-svc
