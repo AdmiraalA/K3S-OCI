@@ -19,7 +19,7 @@ resource "oci_core_network_security_group_security_rule" "allow_http_from_all" {
 
   source      = "0.0.0.0/0"
   source_type = "CIDR_BLOCK"
-  stateless   = false
+  stateless   = true
 
   tcp_options {
     destination_port_range {
@@ -38,7 +38,7 @@ resource "oci_core_network_security_group_security_rule" "allow_https_from_all" 
 
   source      = "0.0.0.0/0"
   source_type = "CIDR_BLOCK"
-  stateless   = false
+  stateless   = true
 
   tcp_options {
     destination_port_range {
@@ -58,7 +58,7 @@ resource "oci_core_network_security_group_security_rule" "allow_kubeapi_from_all
 
   source      = var.my_public_ip_cidr
   source_type = "CIDR_BLOCK"
-  stateless   = false
+  stateless   = true
 
   tcp_options {
     destination_port_range {
@@ -89,7 +89,7 @@ resource "oci_core_network_security_group_security_rule" "nsg_to_instances_http"
 
   source      = oci_core_network_security_group.public_lb_nsg.id
   source_type = "NETWORK_SECURITY_GROUP"
-  stateless   = false
+  stateless   = true
 
   tcp_options {
     destination_port_range {
@@ -108,7 +108,7 @@ resource "oci_core_network_security_group_security_rule" "nsg_to_instances_https
 
   source      = oci_core_network_security_group.public_lb_nsg.id
   source_type = "NETWORK_SECURITY_GROUP"
-  stateless   = false
+  stateless   = true
 
   tcp_options {
     destination_port_range {
@@ -140,8 +140,7 @@ resource "oci_core_network_security_group_security_rule" "nsg_to_instances_kubea
 
   source      = oci_core_network_security_group.public_lb_nsg.id
   source_type = "NETWORK_SECURITY_GROUP"
-  stateless   = false
-
+  stateless   = true
   tcp_options {
     destination_port_range {
       max = var.kube_api_port
