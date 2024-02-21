@@ -444,6 +444,16 @@ spec:
       containers:
       - image: nginx:1.25.3
         name: nginx
+        imagePullPolicy: Always
+        securityContext:
+          allowPrivilegeEscalation: false
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "500Mi"
+          requests:
+            cpu: "0.1"
+            memory: "100Mi"
         env:
         - name: SECURE_SUBNET
           value: 8.8.8.8/32 # change-me
