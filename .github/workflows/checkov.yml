@@ -20,19 +20,17 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Checkov GitHub Action
-        id: checkov
         uses: bridgecrewio/checkov-action@v12.2655.0
         with:
-          output_format: sarif
-          output_file_path: results.sarif
-        continue-on-error: true
-        
+          output_format: cli,sarif
+          output_file_path: console,results.sarif
+          soft_fail: true
+
       - name: Upload SARIF file
-        if: always()
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
+        if: success() || failure()
         with:
-          name: checkov-results
-          path: ${{ github.workspace }}/results.sarif
+          sarif_file: results.sarif
 
       - name: Close related pull requests
         if: success()
