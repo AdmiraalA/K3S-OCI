@@ -18,11 +18,20 @@ spec:
         tier: frontend
     spec:
       containers:
-      - image: nginx:latest
+      - image: nginx:1.25.3
         name: nginx
+        securityContext:
+          allowPrivilegeEscalation: false
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "500Mi"
+          requests:
+            cpu: "0.1"
+            memory: "100Mi"
         env:
-        - name: SECURE_SUBNET
-          value: 8.8.8.8/32 # change-me
+#        - name: SECURE_SUBNET # Gonna fix later
+#          value: 8.8.8.8/32 # change-me
         - name: KUBE_SVC_NAME
           value: wordpress-svc
         volumeMounts:
