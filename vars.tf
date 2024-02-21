@@ -1,3 +1,10 @@
+variable "my_public_ip_cidr" {
+  type    = list(string)
+  default = ["82.168.9.145/32", "86.85.108.82/32"]
+}
+
+variable "private_key" {}
+
 variable "region" {
   type = string
 }
@@ -7,10 +14,19 @@ variable "availability_domain" {
 }
 
 variable "tenancy_ocid" {
-
+  type = string
 }
 
-variable "compartment_ocid" {
+variable "user_ocid" {
+  type = string
+}
+
+
+#variable "compartment_ocid" {
+#  type = string
+#}
+
+variable "fingerprint" {
   type = string
 }
 
@@ -41,11 +57,7 @@ variable "fault_domains" {
   default = ["FAULT-DOMAIN-1", "FAULT-DOMAIN-2", "FAULT-DOMAIN-3"]
 }
 
-variable "public_key_path" {
-  type        = string
-  default     = "~/.ssh/id_rsa.pub"
-  description = "Path to your public workstation SSH key"
-}
+variable "ssh_authorized_keys_content" {}
 
 variable "compute_shape" {
   type    = string
@@ -91,7 +103,7 @@ variable "oci_core_vcn_cidr" {
 
 variable "oci_core_subnet_cidr10" {
   type    = string
-  default = "10.0.0.0/24"
+  default = "10.0.2.0/24"
 }
 
 variable "oci_core_subnet_cidr11" {
@@ -136,7 +148,7 @@ variable "ingress_controller_https_nodeport" {
 
 variable "k3s_server_pool_size" {
   type    = number
-  default = 1
+  default = 2
 }
 
 variable "k3s_worker_pool_size" {
@@ -146,7 +158,7 @@ variable "k3s_worker_pool_size" {
 
 variable "k3s_extra_worker_node" {
   type    = bool
-  default = true
+  default = false
 }
 
 variable "unique_tag_key" {
@@ -156,14 +168,8 @@ variable "unique_tag_key" {
 
 variable "unique_tag_value" {
   type    = string
-  default = "https://github.com/garutilorenzo/k3s-oci-cluster"
+  default = "https://github.com/AdmiraalA/K3S-OCI"
 }
-
-variable "my_public_ip_cidr" {
-  type        = string
-  description = "My public ip CIDR"
-}
-
 variable "istio_release" {
   type    = string
   default = "1.16.1"
@@ -176,7 +182,7 @@ variable "disable_ingress" {
 
 variable "ingress_controller" {
   type    = string
-  default = "default"
+  default = "nginx"
   validation {
     condition     = contains(["default", "nginx", "traefik2", "istio"], var.ingress_controller)
     error_message = "Supported ingress controllers are: default, nginx, traefik2, istio"
@@ -200,7 +206,7 @@ variable "certmanager_release" {
 
 variable "certmanager_email_address" {
   type    = string
-  default = "changeme@example.com"
+  default = "d.vanoosterhoud@gmail.com"
 }
 
 variable "install_longhorn" {
@@ -236,4 +242,13 @@ variable "argocd_image_updater_release" {
 variable "expose_kubeapi" {
   type    = bool
   default = false
+}
+variable "cloudflare_zone_id" {
+  description = "The Cloudflare Zone ID"
+  type        = string
+}
+variable "cloudflare_api_key" {}
+variable "api_token" {}
+variable "domain" {
+  description = "The domain name for which DNS records need to be managed"
 }
