@@ -1,0 +1,35 @@
+name: Checkov
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  scan:
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+      
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkov GitHub Action
+        id: checkov
+        uses: bridgecrewio/checkov-action@v12.2655.0
+        with:
+          output_format: sarif
+          output_file_path: results.sarif
+        continue-on-error: true
+        
+      - name: Upload SARIF file
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkov-results
+          path: ${{ github.workspace }}/results.sarif
