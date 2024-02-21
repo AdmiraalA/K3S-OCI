@@ -31,7 +31,7 @@ spec:
         tier: backend
     spec:
       containers:
-      - image: mariadb:latest
+      - image: mariadb:10.6
         name: mariadb
         imagePullPolicy: Always
         securityContext:
