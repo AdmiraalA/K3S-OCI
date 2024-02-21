@@ -1,6 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  namespace: nginx
   name: nginx-conf
 data:
   nginx.conf: |
@@ -63,6 +64,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  namespace: nginx
   name: wordpress-conf-tpl
 data:
   wordpress.conf.template: |
@@ -163,6 +165,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  namespace: nginx
   name: nginx-custom-conf
 data:
   nginx-custom.conf: |
@@ -287,6 +290,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  namespace: nginx
   name: wp-hardening
 data:
   wp-hardening.conf: |
