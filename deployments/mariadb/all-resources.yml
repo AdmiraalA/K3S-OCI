@@ -33,7 +33,17 @@ spec:
       containers:
       - image: mariadb:latest
         name: mariadb
-        env:
+        imagePullPolicy: Always
+        securityContext:
+          allowPrivilegeEscalation: false
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "500Mi"
+          requests:
+            cpu: "0.1"
+            memory: "100Mi"
+            env:
         - name: MYSQL_ROOT_PASSWORD
           value: ro0tP4sSworD
         - name: MYSQL_DATABASE
