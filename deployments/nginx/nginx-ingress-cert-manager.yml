@@ -1,6 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
+  namespace: nginx-wp-ingress
   name: nginx-wp-ingress
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-staging" # or "letsencrypt-prod"
