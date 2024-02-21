@@ -16,6 +16,7 @@ env:
   TF_WORKSPACE: "K3S-OCI"
   CONFIG_DIRECTORY: "./"
 
+permissions: read-all
 jobs:
   terraform:
     name: Terraform Plan
