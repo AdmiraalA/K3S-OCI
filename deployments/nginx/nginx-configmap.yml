@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: nginx-conf
-  namespace: mariadb
+  namespace: nginx
 data:
   nginx.conf: |
     user nginx;
@@ -66,7 +66,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: wordpress-conf-tpl
-  namespace: mariadb
+  namespace: nginx
 data:
   wordpress.conf.template: |
     server {
@@ -162,7 +162,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: nginx-custom-conf
-  namespace: mariadb
+  namespace: nginx
 data:
   nginx-custom.conf: |
     # Directives to send expires headers and turn off 404 error logging.
@@ -262,7 +262,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: wp-hardening
-  namespace: mariadb
+  namespace: nginx
 data:
   wp-hardening.conf: |
     # Deny all attempts to access hidden files such as .htaccess, .htpasswd, .DS_Store (Mac).
