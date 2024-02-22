@@ -5,6 +5,7 @@ metadata:
     app: wordpress
     tier: frontend
   name: wordpress-svc
+  namespace: wordpress-svc
 spec:
   ports:
   - port: 9000
