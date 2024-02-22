@@ -31,7 +31,7 @@ spec:
         imagePullPolicy: Always
         securityContext:
           runAsNonRoot: true  # Running container as non-root
-          runAsUser: 1000  # Using high UID to avoid conflicts
+          runAsUser: 103306  # Using high UID to avoid conflicts
           readOnlyRootFilesystem: true  # Mounting read-only filesystem
           allowPrivilegeEscalation: false
           capabilities:
