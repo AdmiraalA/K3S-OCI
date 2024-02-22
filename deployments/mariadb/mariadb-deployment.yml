@@ -18,12 +18,25 @@ spec:
         app: mariadb
         tier: backend
     spec:
+      automountServiceAccountToken: false  # Service Account Tokens are only mounted where necessary
+      securityContext:
+        runAsNonRoot: true  # Containers should run as a high UID to avoid host conflict
+        runAsUser: 1000  # Using high UID to avoid conflicts
+        readOnlyRootFilesystem: true  # Use read-only filesystem for containers where possible
+        seLinuxOptions:
+          type: "docker/default"  # Ensure that the seccomp profile is set to docker/default or runtime/default
       containers:
       - image: mariadb:10.6
         name: mariadb
         imagePullPolicy: Always
         securityContext:
+          runAsNonRoot: true  # Running container as non-root
+          runAsUser: 1000  # Using high UID to avoid conflicts
+          readOnlyRootFilesystem: true  # Mounting read-only filesystem
           allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL  # Dropping all capabilities
         resources:
           limits:
             cpu: "0.5"
@@ -51,6 +64,14 @@ spec:
           timeoutSeconds: 5
           successThreshold: 1
           failureThreshold: 3
+        livenessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 30  # Delay before liveness probe is initiated
+          periodSeconds: 10  # How often to perform the probe
+          timeoutSeconds: 5  # When the probe times out
+          successThreshold: 1  # Minimum consecutive successes for the probe to be considered successful
+          failureThreshold: 3  # Minimum consecutive failures for the probe to be considered failed
       volumes:
       - name: mariadb-persistent-storage
         persistentVolumeClaim:
