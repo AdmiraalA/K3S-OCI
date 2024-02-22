@@ -19,11 +19,14 @@ spec:
         tier: frontend
     spec:
       containers:
-      - image: wordpress:php7.4-fpm
+      - image: wordpress@sha256:INSERT_IMAGE_DIGEST_HERE
         name: wordpress
         imagePullPolicy: Always
         securityContext:
           allowPrivilegeEscalation: false
+          runAsUser: 10001  # Run container as a high UID to avoid conflicts
+          capabilities:
+            drop: ["ALL"]  # Minimize all containers with capabilities
         resources:
           limits:
             cpu: "0.5"
@@ -43,6 +46,24 @@ spec:
         ports:
         - containerPort: 9000
           name: php-fpm
+        readinessProbe:
+          httpGet:
+            path: /index.php
+            port: php-fpm
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /index.php
+            port: php-fpm
+          initialDelaySeconds: 20
+          periodSeconds: 30
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
         volumeMounts:
         - name: wordpress-persistent-storage
           mountPath: /var/www/html
@@ -50,3 +71,22 @@ spec:
       - name: wordpress-persistent-storage
         persistentVolumeClaim:
           claimName: wordpress-pvc
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: wordpress-network-policy
+  namespace: wordpress
+spec:
+  podSelector:
+    matchLabels:
+      app: wordpress
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector: {}
+  egress:
+  - to:
+    - podSelector: {}
