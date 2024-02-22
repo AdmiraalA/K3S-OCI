@@ -2,6 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mariadb-pvc
+  namespace: mariadb-pcv
 spec:
   accessModes:
     - ReadWriteOnce
@@ -17,6 +18,7 @@ metadata:
   labels:
     app: mariadb
   name: mariadb
+  namespace: mariadb
 spec:
   replicas: 1
   selector:
@@ -33,7 +35,7 @@ spec:
       automountServiceAccountToken: false  # Service Account Tokens are only mounted where necessary
       securityContext:
         runAsNonRoot: true  # Containers should run as a high UID to avoid host conflict
-        runAsUser: 1000  # Using high UID to avoid conflicts
+        runAsUser: 103306  # Using high UID to avoid conflicts
         readOnlyRootFilesystem: true  # Use read-only filesystem for containers where possible
         seLinuxOptions:
           type: "docker/default"  # Ensure that the seccomp profile is set to docker/default or runtime/default
@@ -96,6 +98,7 @@ metadata:
     app: mariadb
     tier: backend
   name: mariadb-svc
+  namespace: mariadb-svc
 spec:
   ports:
   - port: 3306
