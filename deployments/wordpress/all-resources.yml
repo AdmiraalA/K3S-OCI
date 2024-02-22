@@ -18,13 +18,20 @@ spec:
         app: mariadb
         tier: backend
     spec:
+      securityContext:
+        seLinuxOptions:
+          type: "docker/default"  # Setting security profile to docker/default
       containers:
-      - image: mariadb:10.6
+      - image: mariadb@sha256:<IMAGE_DIGEST>  # Using image digest for image
         name: mariadb
         imagePullPolicy: Always
         securityContext:
-          runAsNonRoot: true
+          runAsNonRoot: true  # Running container as non-root
           allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - NET_RAW  # Dropping NET_RAW capability
+          runAsUser: 1000  # Using high UID
         resources:
           limits:
             cpu: "0.5"
@@ -52,6 +59,14 @@ spec:
           timeoutSeconds: 5
           successThreshold: 1
           failureThreshold: 3
+        livenessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 30  # Delay before liveness probe is initiated
+          periodSeconds: 10  # How often to perform the probe
+          timeoutSeconds: 5  # When the probe times out
+          successThreshold: 1  # Minimum consecutive successes for the probe to be considered successful
+          failureThreshold: 3  # Minimum consecutive failures for the probe to be considered failed
       volumes:
       - name: mariadb-persistent-storage
         persistentVolumeClaim:
