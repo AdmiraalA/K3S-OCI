@@ -1,4 +1,4 @@
-output "k3s_servers_ips" {
+output "k3s_controle_plane_ips" {
   depends_on = [
     data.oci_core_instance_pool_instances.k3s_servers_instances,
   ]
