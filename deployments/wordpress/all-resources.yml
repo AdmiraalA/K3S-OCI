@@ -36,6 +36,7 @@ spec:
         name: wordpress
         imagePullPolicy: Always
         securityContext:
+          runAsNonRoot: true
           allowPrivilegeEscalation: false
         resources:
           limits:
