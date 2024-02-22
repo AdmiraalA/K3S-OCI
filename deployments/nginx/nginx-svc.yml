@@ -5,6 +5,7 @@ metadata:
     app: nginx
     tier: frontend
   name: nginx-svc
+  namespace: nginx-svc
 spec:
   ports:
   - port: 80
