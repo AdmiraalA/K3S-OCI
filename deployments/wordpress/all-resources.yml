@@ -35,7 +35,7 @@ spec:
           readOnlyRootFilesystem: true  # Mounting read-only filesystem
           allowPrivilegeEscalation: false
           seccompProfile:
-          type: "docker/default"  # Ensure that the seccomp profile is set to docker/default or runtime/default
+            type: "docker/default"  # Ensure that the seccomp profile is set to docker/default or runtime/default
           capabilities:
             drop:
               - ALL  # Dropping all capabilities
