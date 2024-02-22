@@ -18,6 +18,7 @@ spec:
         app: wordpress
         tier: frontend
     spec:
+      automountServiceAccountToken: false  # Service Account Tokens are only mounted where necessary
       securityContext:
         seccompProfile:
           type: RuntimeDefault
