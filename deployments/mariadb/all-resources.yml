@@ -18,7 +18,6 @@ metadata:
   labels:
     app: mariadb
   name: mariadb
-  namespace: mariadb
 spec:
   replicas: 1
   selector:
@@ -35,19 +34,21 @@ spec:
       automountServiceAccountToken: false  # Service Account Tokens are only mounted where necessary
       securityContext:
         runAsNonRoot: true  # Containers should run as a high UID to avoid host conflict
-        runAsUser: 103306  # Using high UID to avoid conflicts
+        runAsUser: 10000  # Using high UID to avoid conflicts
         readOnlyRootFilesystem: true  # Use read-only filesystem for containers where possible
         seccompProfile:
           type: "docker/default"  # Ensure that the seccomp profile is set to docker/default or runtime/default
       containers:
-      - image: mariadb:10.6@sha256:xxxxx
+      - image: mariadb@sha256:<IMAGE_DIGEST>  # Using image digest for image
         name: mariadb
         imagePullPolicy: Always
-        runAsNonRoot: true
-          runAsUser: 10336
+        securityContext:
+          runAsNonRoot: true  # Running container as non-root
+          runAsUser: 10000  # Using high UID to avoid conflicts
+          readOnlyRootFilesystem: true  # Mounting read-only filesystem
           allowPrivilegeEscalation: false
           seccompProfile:
-          type: docker/default  # Ensure that the seccomp profile is set to docker/default or runtime/default
+            type: "docker/default"  # Ensure that the seccomp profile is set to docker/default or runtime/default
           capabilities:
             drop:
               - ALL  # Dropping all capabilities
@@ -90,21 +91,4 @@ spec:
       - name: mariadb-persistent-storage
         persistentVolumeClaim:
           claimName: mariadb-pvc
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: mariadb
-    tier: backend
-  name: mariadb-svc
-  namespace: mariadb-svc
-spec:
-  ports:
-  - port: 3306
-    protocol: TCP
-    targetPort: 3306
-  selector:
-    app: mariadb
-    tier: backend
-  type: ClusterIP
+
