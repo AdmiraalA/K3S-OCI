@@ -292,12 +292,10 @@ data:
       return 444;
     }
 
-    location ~* /(wp-config.php|readme.html|license.txt|nginx.conf) {
-      deny all;
-    }
-
-    location = /wp-config.txt {
-        deny all;
+    location ~* ^/(license.txt|wp-includes/(.*)/.+\.(js|css)|wp-admin/(.*)/.+\.(js|css))$ {
+        sub_filter_types text/css text/javascript text/plain;
+        sub_filter_once on;
+        sub_filter ';' '; /* $msec */ ';
     }
 
     location ~* ^/wp-content/plugins/.+\.(txt|log|md)$ {
@@ -308,32 +306,6 @@ data:
     location ~* ^/wp-content/themes/.+\.(txt|log|md)$ {
       deny all;
       error_page 403 =404 / ;
-    }
-
-    location ~* ^/(license.txt|wp-includes/(.*)/.+\.(js|css)|wp-admin/(.*)/.+\.(js|css))$ {
-        sub_filter_types text/css text/javascript text/plain;
-        sub_filter_once on;
-        sub_filter ';' '; /* $msec */ ';
-    }
-
-    location ~* /(?:uploads|files|wp-content|wp-includes|akismet)/.*.php$ {
-        deny all;
-    }
-
-    location ~ /\.(svn|git)/* {
-        deny all;
-    }
-
-    location ~ /\.ht {
-        deny all;
-    }
-
-    location ~ /\.user.ini {
-        deny all;
-    }
-
-    location ~ \.user\.ini$ {
-        deny all;
     }
 
     location ~* ^/(?:wp-content|wp-includes)/.*\.php$ {
@@ -373,7 +345,7 @@ spec:
           runAsUser: 10080
           allowPrivilegeEscalation: false
           capabilities:
-            drop: ["NET_RAW"]
+            drop: ["ALL"]
         resources:
           limits:
             cpu: "0.5"
@@ -405,6 +377,18 @@ spec:
           mountPath: /etc/nginx/templates/wordpress.conf.template
           subPath: wordpress.conf.template
           readOnly: true
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 20
       volumes:
       - name: nginx-custom-conf
         configMap:
