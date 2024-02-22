@@ -369,6 +369,7 @@ spec:
         name: nginx
         imagePullPolicy: Always
         securityContext:
+          runAsNonRoot: true
           runAsUser: 10080
           allowPrivilegeEscalation: false
           capabilities:
