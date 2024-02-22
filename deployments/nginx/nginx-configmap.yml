@@ -417,11 +417,15 @@ spec:
         app: mariadb
         tier: backend
     spec:
+      securityContext:
+        runAsNonRoot: true
       containers:
       - image: mariadb:10.6
         name: mariadb
         imagePullPolicy: Always
         securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
           allowPrivilegeEscalation: false
         resources:
           limits:
