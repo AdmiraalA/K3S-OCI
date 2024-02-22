@@ -37,7 +37,7 @@ spec:
         runAsUser: 103306 # Using high UID to avoid conflicts
         readOnlyRootFilesystem: true  # Use read-only filesystem for containers where possible
         seccompProfile:
-          type: docker/default  # Ensure that the seccomp profile is set to docker/default or runtime/default
+          type: RuntimeDefault
       containers:
       - image: mariadb:10.6@sha256:placeholder_digest
         name: mariadb
@@ -48,7 +48,7 @@ spec:
           readOnlyRootFilesystem: true  # Mounting read-only filesystem
           allowPrivilegeEscalation: false
           seccompProfile:
-            type: docker/default  # Ensure that the seccomp profile is set to docker/default or runtime/default
+            type: RuntimeDefault
           capabilities:
             drop:
               - ALL  # Dropping all capabilities
