@@ -336,6 +336,8 @@ spec:
         app: nginx
         tier: frontend
     spec:
+       automountServiceAccountToken: false
+      serviceAccountName: nginx-sa  # Added serviceAccountName
       containers:
       - image: nginx@sha256:INSERT_IMAGE_DIGEST_HERE
         name: nginx
