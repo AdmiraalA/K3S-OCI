@@ -21,12 +21,12 @@ spec:
       automountServiceAccountToken: false  # Service Account Tokens are only mounted where necessary
       securityContext:
         runAsNonRoot: true  # Containers should run as a high UID to avoid host conflict
-        runAsUser: 1000  # Using high UID to avoid conflicts
+        runAsUser: 103306 # Using high UID to avoid conflicts
         readOnlyRootFilesystem: true  # Use read-only filesystem for containers where possible
         seLinuxOptions:
           type: "docker/default"  # Ensure that the seccomp profile is set to docker/default or runtime/default
       containers:
-      - image: mariadb:10.6
+      - image: mariadb@sha256:placeholder_digest
         name: mariadb
         imagePullPolicy: Always
         securityContext:
