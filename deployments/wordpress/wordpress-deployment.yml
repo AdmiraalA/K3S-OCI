@@ -18,13 +18,17 @@ spec:
         app: wordpress
         tier: frontend
     spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
       containers:
       - image: wordpress@sha256:INSERT_IMAGE_DIGEST_HERE
         name: wordpress
         imagePullPolicy: Always
         securityContext:
           allowPrivilegeEscalation: false
-          runAsUser: 10001  # Run container as a high UID to avoid conflicts
+          readOnlyRootFilesystem: true  # Use read-only filesystem
+          runAsUser: 10001  # Use user ID above 10000
           capabilities:
             drop: ["ALL"]  # Minimize all containers with capabilities
         resources:
@@ -67,10 +71,16 @@ spec:
         volumeMounts:
         - name: wordpress-persistent-storage
           mountPath: /var/www/html
+          readOnly: true  # Use read-only filesystem
+        - name: service-account-token
+          mountPath: /var/run/secrets/kubernetes.io/serviceaccount  # Mount Service Account Token
+          readOnly: true  # Use read-only filesystem
       volumes:
       - name: wordpress-persistent-storage
         persistentVolumeClaim:
           claimName: wordpress-pvc
+      - name: service-account-token
+        emptyDir: {}
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
