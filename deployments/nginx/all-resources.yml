@@ -452,6 +452,10 @@ spec:
   egress:
   - to:
     - podSelector: {}
+  # Add a default-deny rule to minimize admission of pods without NetworkPolicy
+  # This rule denies all ingress and egress traffic by default
+  # Pods must have specific NetworkPolicy to allow traffic
+  - {}
 ---
 apiVersion: v1
 kind: ServiceAccount
