@@ -5,6 +5,7 @@ metadata:
     app: mariadb
     tier: backend
   name: mariadb-svc
+  namespace: mariadb-svc
 spec:
   ports:
   - port: 3306
