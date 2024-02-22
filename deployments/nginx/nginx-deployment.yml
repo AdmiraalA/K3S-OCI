@@ -18,12 +18,25 @@ spec:
         app: nginx
         tier: frontend
     spec:
+      automountServiceAccountToken: false  # Service Account Tokens are only mounted where necessary
+      securityContext:
+        runAsNonRoot: true  # Containers should run as a high UID to avoid host conflict
+        runAsUser: 1000  # Using high UID to avoid conflicts
+        readOnlyRootFilesystem: true  # Use read-only filesystem for containers where possible
+        seLinuxOptions:
+          type: "docker/default"  # Ensure that the seccomp profile is set to docker/default or runtime/default
       containers:
       - image: nginx:1.25.3
         name: nginx
         imagePullPolicy: Always
         securityContext:
+          runAsNonRoot: true  # Running container as non-root
+          runAsUser: 1000  # Using high UID to avoid conflicts
+          readOnlyRootFilesystem: true  # Mounting read-only filesystem
           allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL  # Dropping all capabilities
         resources:
           limits:
             cpu: "0.5"
@@ -32,8 +45,6 @@ spec:
             cpu: "0.1"
             memory: "100Mi"
         env:
-#        - name: SECURE_SUBNET # Gonna fix later
-#          value: 8.8.8.8/32 # change-me
         - name: KUBE_SVC_NAME
           value: wordpress-svc
         volumeMounts:
