@@ -34,7 +34,7 @@ data:
       # SSL Settings
       ##
 
-      ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+      ssl_protocols TLSv1.2 TLSv1.3;
       ssl_prefer_server_ciphers on;
 
       set_real_ip_from 0.0.0.0/0;
@@ -420,13 +420,18 @@ spec:
       securityContext:
         runAsNonRoot: true
       containers:
-      - image: mariadb:10.6
+      - image: mariadb:10.6@sha256:xxxx
         name: mariadb
         imagePullPolicy: Always
         securityContext:
           runAsNonRoot: true
-          runAsUser: 1000
+          runAsUser: 10336
           allowPrivilegeEscalation: false
+          seccompProfile:
+          type: docker/default  # Ensure that the seccomp profile is set to docker/default or runtime/default
+          capabilities:
+            drop:
+              - ALL  # Dropping all capabilities
         resources:
           limits:
             cpu: "0.5"
@@ -447,6 +452,14 @@ spec:
         - name: "mariadb-persistent-storage"
           mountPath: "/var/lib/mysql/"
         readinessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        livenessProbe:
           tcpSocket:
             port: 3306
           initialDelaySeconds: 10
