@@ -91,4 +91,3 @@ spec:
       - name: mariadb-persistent-storage
         persistentVolumeClaim:
           claimName: mariadb-pvc
-
