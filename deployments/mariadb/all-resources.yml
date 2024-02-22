@@ -43,11 +43,11 @@ spec:
       - image: mariadb:10.6@sha256:xxxxx
         name: mariadb
         imagePullPolicy: Always
-        securityContext:
-          runAsNonRoot: true  # Running container as non-root
-          runAsUser: 103306 # Using high UID to avoid conflicts
-          readOnlyRootFilesystem: true  # Mounting read-only filesystem
+        runAsNonRoot: true
+          runAsUser: 10336
           allowPrivilegeEscalation: false
+          seccompProfile:
+          type: docker/default  # Ensure that the seccomp profile is set to docker/default or runtime/default
           capabilities:
             drop:
               - ALL  # Dropping all capabilities
