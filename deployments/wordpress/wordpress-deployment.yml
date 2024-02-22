@@ -72,15 +72,10 @@ spec:
         - name: wordpress-persistent-storage
           mountPath: /var/www/html
           readOnly: true  # Use read-only filesystem
-        - name: service-account-token
-          mountPath: /var/run/secrets/kubernetes.io/serviceaccount  # Mount Service Account Token
-          readOnly: true  # Use read-only filesystem
       volumes:
       - name: wordpress-persistent-storage
         persistentVolumeClaim:
           claimName: wordpress-pvc
-      - name: service-account-token
-        emptyDir: {}
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
