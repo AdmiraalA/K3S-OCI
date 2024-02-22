@@ -21,7 +21,7 @@ spec:
       automountServiceAccountToken: false  # Service Account Tokens are only mounted where necessary
       securityContext:
         seccompProfile:
-          type: RuntimeDefault
+          type: Docker/Default
       containers:
       - image: wordpress@sha256:INSERT_IMAGE_DIGEST_HERE
         name: wordpress
@@ -30,6 +30,8 @@ spec:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true  # Use read-only filesystem
           runAsUser: 10001  # Use user ID above 10000
+          seccompProfile:
+          type: Docker/Default
           capabilities:
             drop: ["ALL"]  # Minimize all containers with capabilities
         resources:
