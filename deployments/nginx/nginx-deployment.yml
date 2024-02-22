@@ -19,21 +19,24 @@ spec:
         tier: frontend
     spec:
       automountServiceAccountToken: false  # Minimize the admission of pods which lack an associated NetworkPolicy
-      securityContext:
-        runAsNonRoot: true  # Containers should run as a high UID to avoid host conflict
-        runAsUser: 1000  # Using high UID to avoid conflicts
-        readOnlyRootFilesystem: true  # Use read-only filesystem for containers where possible
-        seLinuxOptions:
-          type: "docker/default"  # Ensure that the seccomp profile is set to docker/default or runtime/default
+      runAsNonRoot: true
+          runAsUser: 10080
+          allowPrivilegeEscalation: false
+          seccompProfile:
+          type: docker/default  # Ensure that the seccomp profile is set to docker/default or runtime/default
+          capabilities:
+            drop:
+              - ALL  # Dropping all capabilities
       containers:
       - image: nginx@sha256:<IMAGE_DIGEST>  # Image should use digest
         name: nginx
         imagePullPolicy: Always
         securityContext:
-          runAsNonRoot: true  # Running container as non-root
-          runAsUser: 10080  # Using high UID to avoid conflicts
-          readOnlyRootFilesystem: true  # Mounting read-only filesystem
+          runAsNonRoot: true
+          runAsUser: 10080
           allowPrivilegeEscalation: false
+          seccompProfile:
+          type: docker/default  # Ensure that the seccomp profile is set to docker/default or runtime/default
           capabilities:
             drop:
               - ALL  # Dropping all capabilities
