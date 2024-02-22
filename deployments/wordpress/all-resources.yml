@@ -23,7 +23,7 @@ spec:
         runAsNonRoot: true  # Containers should run as a high UID to avoid host conflict
         runAsUser: 10000  # Using high UID to avoid conflicts
         readOnlyRootFilesystem: true  # Use read-only filesystem for containers where possible
-        seLinuxOptions:
+        seccompProfile:
           type: "docker/default"  # Ensure that the seccomp profile is set to docker/default or runtime/default
       containers:
       - image: mariadb@sha256:<IMAGE_DIGEST>  # Using image digest for image
@@ -31,9 +31,11 @@ spec:
         imagePullPolicy: Always
         securityContext:
           runAsNonRoot: true  # Running container as non-root
-          runAsUser: 1000  # Using high UID to avoid conflicts
+          runAsUser: 10000  # Using high UID to avoid conflicts
           readOnlyRootFilesystem: true  # Mounting read-only filesystem
           allowPrivilegeEscalation: false
+          seccompProfile:
+          type: "docker/default"  # Ensure that the seccomp profile is set to docker/default or runtime/default
           capabilities:
             drop:
               - ALL  # Dropping all capabilities
