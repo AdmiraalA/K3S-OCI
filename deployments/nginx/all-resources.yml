@@ -1,3 +1,349 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf
+  namespace: nginx
+data:
+  nginx.conf: |
+    user nginx;
+    worker_processes  1;
+    
+    error_log  /dev/stderr warn;
+    pid        /var/run/nginx.pid;
+
+    events {
+      worker_connections  1024;
+    }
+
+    http {
+      include       /etc/nginx/mime.types;
+      default_type  application/octet-stream;
+
+      sendfile        on;
+    
+      tcp_nopush on;
+      tcp_nodelay on;
+      
+      keepalive_timeout 65;
+
+      types_hash_max_size 2048;
+      client_max_body_size 20M;
+      
+      ##
+      # SSL Settings
+      ##
+
+      ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+      ssl_prefer_server_ciphers on;
+
+      set_real_ip_from 0.0.0.0/0;
+
+      log_format main '$remote_addr - $remote_user [$time_local] '
+                    '"$request" $status $body_bytes_sent '
+                    '"$http_referer" "$http_user_agent"';
+
+      access_log  /dev/stdout  main;
+
+      ##
+      # Gzip Settings
+      ##
+
+      gzip on;
+      gzip_disable "msie6";
+
+      gzip_vary on;
+      gzip_proxied any;
+      gzip_comp_level 6;
+      gzip_buffers 16 8k;
+      gzip_http_version 1.1;
+      gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+      include /etc/nginx/conf.d/*.conf;
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wordpress-conf-tpl
+  namespace: nginx
+data:
+  wordpress.conf.template: |
+    server {
+      listen       80 default_server;
+      listen  [::]:80 default_server;
+
+      server_name _;
+      root /var/www/html;
+      index index.html index.php;
+      
+      client_max_body_size 20M;
+
+      # Security
+      include /etc/nginx/custom.conf.d/nginx-custom.conf;
+      include /etc/nginx/custom.conf.d/wp-hardening.conf;
+
+      # Prevent Clickjacking
+      add_header X-Frame-Options "SAMEORIGIN";
+      add_header X-Content-Type-Options "nosniff";
+
+      charset utf-8;
+
+      # Set the custom error pages
+      error_page 404 /index.php;
+      error_page 403 /index.php;
+
+      # Logs
+      error_log /dev/stderr;
+      access_log /dev/stdout main;
+     
+      location ~* /xmlrpc.php$ {
+        fastcgi_pass ${KUBE_SVC_NAME}:9000;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+
+        allow ${SECURE_SUBNET};
+        allow 127.0.0.1; 
+        deny all;
+      }
+
+      location ~* ^/(?:\.|conf|data/(?:files|personal|logs|plugins|tmp|cache)|plugins/editor.zoho/agent/files) {
+          deny all;
+      }
+
+      location ~* /data/public/.*.(ser|htaccess)$ {
+          deny all;
+      }
+
+      location ~* ^/(favicon.ico|robots.txt) {
+          log_not_found off;
+      }
+
+      location = /favicon.ico {
+          expires 1y;
+          log_not_found off;
+          access_log off;
+      }
+
+      location ~ ^/(wp-admin|wp-login.php) {
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass ${KUBE_SVC_NAME}:9000;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param SCRIPT_NAME $fastcgi_script_name;
+
+        allow ${SECURE_SUBNET};
+        allow 127.0.0.1; 
+        deny all;
+      }
+
+      location ~ \.php$ {
+          fastcgi_split_path_info ^(.+\.php)(/.+)$;
+          fastcgi_pass ${KUBE_SVC_NAME}:9000;
+          fastcgi_index index.php;
+          include fastcgi_params;
+          fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+          fastcgi_param SCRIPT_NAME $fastcgi_script_name;
+      }
+
+      location ~* \.(jpg|jpeg|png|gif|ico|css|js)$ {
+          expires 7d;
+          add_header Pragma public;
+          add_header Cache-Control "public, must-revalidate, proxy-revalidate";
+      }
+
+      location / {
+          try_files $uri $uri/ /index.php?$args;
+      }
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-custom-conf
+  namespace: nginx
+data:
+  nginx-custom.conf: |
+    location ~* ^.+\.(curl|heic|swf|tiff|rss|atom|zip|tgz|gz|rar|bz2|doc|xls|exe|ppt|tar|mid|midi|wav|bmp|rtf)$ {
+        log_not_found off;
+        expires max;
+    }
+
+    location ~* \.(?:eot|otf|ttf|woff|woff2)$ {
+        expires max;
+        add_header Cache-Control "public";
+    }
+
+    location ~* \.(?:svg|svgz|mp4|webm)$ {
+        expires max;
+        add_header Cache-Control "public";
+    }
+
+    location ~* \.(?:jpg|jpeg|gif|png|ico|cur|gz|aac|m4a|mp3|ogg|ogv|webp)$ {
+        expires 1M;
+        add_header Cache-Control "public";
+    }
+
+    location ~* \.(?:css(\.map)?|js(\.map)?)$ {
+        add_header "Access-Control-Allow-Origin" "*";
+        log_not_found off;
+        expires 30d;
+    }
+
+    location ~* \.(?:css|js)$ {
+        expires 1y;
+        add_header Cache-Control "public";
+    }
+
+    location ~* \.(html)$ {
+        expires 7d;
+        add_header Cache-Control "public";
+    }
+
+    location ~ /\. {
+        deny all;
+    }
+
+    location ~*  "/(^$|readme|license|example|README|LEGALNOTICE|INSTALLATION|CHANGELOG)\.(txt|html|md)" {
+        deny all;
+    }
+
+    location ~* "\.(old|orig|original|php#|php~|php_bak|save|swo|aspx?|tpl|sh|bash|bak?|cfg|cgi|dll|exe|git|hg|ini|jsp|log|mdb|out|sql|svn|swp|tar|rdf)$" {
+        deny all;
+    }
+
+    location ~* "(eval\()" {
+        deny all;
+    }
+    location ~* "(127\.0\.0\.1)" {
+        deny all;
+    }
+    location ~* "([a-z0-9]{2000})" {
+        deny all;
+    }
+    location ~* "(javascript\:)(.*)(\;)" {
+        deny all;
+    }
+
+    location ~* "(base64_encode)(.*)(\()" {
+        deny all;
+    }
+    location ~* "(GLOBALS|REQUEST)(=|\[|%)" {
+        deny all;
+    }
+    location ~* "(<|%3C).*script.*(>|%3)" {
+        deny all;
+    }
+    location ~ "(\\|\.\.\.|\.\./|~|`|<|>|\|)" {
+        deny all;
+    }
+    location ~* "(boot\.ini|etc/passwd|self/environ)" {
+        deny all;
+    }
+    location ~* "(thumbs?(_editor|open)?|tim(thumb)?)\.php" {
+        deny all;
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wp-hardening
+  namespace: nginx
+data:
+  wp-hardening.conf: |
+    location ~ /\. {
+        deny all;
+    }
+
+    location ~* /uploads/.*\.php$ {
+        deny all;
+    }
+
+    location ~* /files/.*\.php$ {
+        deny all;
+    }
+
+    location ~* /akismet/.*\.php$ {
+        allow 127.0.0.1;
+        deny all;
+    }
+
+    location /wp-content/cache/ {
+        deny all;
+    }
+
+    location ~ ^.+\.(sql|bak|php~|php#|php.save|php.swp)$ {
+        deny all;
+    }
+
+    location ~* ^/(wp-content)/(.*?)\.(zip|gz|tar|bzip2|7z)\$ {
+      deny all;
+    }
+
+    location ~ ^/wp-content/uploads/sucuri {
+      deny all;
+    }
+
+    location ~ ^/wp-content/updraft {
+      deny all;
+    }
+
+    location ~* .(pl|cgi|py|sh|lua|asp)$ {
+      return 444;
+    }
+
+    location ~* /(wp-config.php|readme.html|license.txt|nginx.conf) {
+      deny all;
+    }
+
+    location = /wp-config.txt {
+        deny all;
+    }
+
+    location ~* ^/wp-content/plugins/.+\.(txt|log|md)$ {
+      deny all;
+      error_page 403 =404 / ;
+    }
+
+    location ~* ^/wp-content/themes/.+\.(txt|log|md)$ {
+      deny all;
+      error_page 403 =404 / ;
+    }
+
+    location ~* ^/(license.txt|wp-includes/(.*)/.+\.(js|css)|wp-admin/(.*)/.+\.(js|css))$ {
+        sub_filter_types text/css text/javascript text/plain;
+        sub_filter_once on;
+        sub_filter ';' '; /* $msec */ ';
+    }
+
+    location ~* /(?:uploads|files|wp-content|wp-includes|akismet)/.*.php$ {
+        deny all;
+    }
+
+    location ~ /\.(svn|git)/* {
+        deny all;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+
+    location ~ /\.user.ini {
+        deny all;
+    }
+
+    location ~ \.user\.ini$ {
+        deny all;
+    }
+
+    location ~* ^/(?:wp-content|wp-includes)/.*\.php$ {
+        deny all;
+    }
+
+    location ~* ^/wp-content/uploads/.*\.(?:s?html?|php|js|swf)$ {
+        deny all;
+    }
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,16 +365,14 @@ spec:
         tier: frontend
     spec:
       containers:
-      - image: nginx@sha256:<image_digest> # Replace <image_digest> with the actual digest
+      - image: nginx@sha256:INSERT_IMAGE_DIGEST_HERE
         name: nginx
         imagePullPolicy: Always
         securityContext:
+          runAsUser: 10080
           allowPrivilegeEscalation: false
-          runAsUser: 10001 # Adjust the UID as needed
-          readOnlyRootFilesystem: true # Ensure read-only filesystem
           capabilities:
-            drop:
-            - NET_RAW
+            drop: ["NET_RAW"]
         resources:
           limits:
             cpu: "0.5"
@@ -38,17 +382,9 @@ spec:
             memory: "100Mi"
         env:
         - name: SECURE_SUBNET
-          value: 8.8.8.8/32 # change-me
+          value: 8.8.8.8/32
         - name: KUBE_SVC_NAME
           value: wordpress-svc
-        readinessProbe:
-          httpGet:
-            path: /some-path # Update with appropriate path
-            port: 80
-        livenessProbe:
-          httpGet:
-            path: /healthz # Update with appropriate path
-            port: 80
         volumeMounts:
         - name: "wordpress-persistent-storage"
           mountPath: "/var/www/html"
