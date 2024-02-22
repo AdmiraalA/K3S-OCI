@@ -21,17 +21,19 @@ spec:
       securityContext:
         seLinuxOptions:
           type: "docker/default"  # Setting security profile to docker/default
+      serviceAccountName: default  # Adjust service account as necessary
       containers:
       - image: mariadb@sha256:<IMAGE_DIGEST>  # Using image digest for image
         name: mariadb
         imagePullPolicy: Always
         securityContext:
           runAsNonRoot: true  # Running container as non-root
+          runAsUser: 1000  # Using high UID to avoid conflicts
+          readOnlyRootFilesystem: true  # Mounting read-only filesystem
           allowPrivilegeEscalation: false
           capabilities:
             drop:
-              - NET_RAW  # Dropping NET_RAW capability
-          runAsUser: 1000  # Using high UID
+              - ALL  # Dropping all capabilities
         resources:
           limits:
             cpu: "0.5"
