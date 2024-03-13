@@ -110,8 +110,8 @@ replace `<your_name>` with your name or a string you prefer.
 Clone this repo and go in the `example/` directory:
 
 ```
-git clone https://github.com/garutilorenzo/k3s-oci-cluster.git
-cd k3s-oci-cluster/example/
+git clone https://github.com/AdmiraalA/K3S-OCI.git
+cd K3S-OCI/example/
 ```
 
 Now you have to edit the `main.tf` file and you have to create the `terraform.tfvars` file. For more detail see [Oracle provider setup](#oracle-provider-setup) and [Pre flight checklist](#pre-flight-checklist).
@@ -290,7 +290,7 @@ Once you have created the terraform.tfvars file edit the `main.tf` file (always 
 | `install_argocd_image_updater`  | `no`  | Boolean value, install [Argo CD Image Updater](https://argocd-image-updater.readthedocs.io/en/stable/) "A tool to automatically update the container images of Kubernetes workloads that are managed by Argo CD.". Default: true  |
 | `argocd_image_updater_release`  | `no`  | Argo CD release Image Updater. Default: v0.12.0  |
 | `unique_tag_key`  | `no`  | Unique tag name used for tagging all the deployed resources. Default: k3s-provisioner |
-| `unique_tag_value`  | `no`  | Unique value used with  unique_tag_key. Default: https://github.com/garutilorenzo/k3s-oci-cluster |
+| `unique_tag_value`  | `no`  | Unique value used with  unique_tag_key. Default: https://github.com/AdmiraalA/K3S-OCI |
 | `expose_kubeapi`  | `no`  | Boolean value, default false. Expose or not the kubeapi server to the internet. Access is granted only from *my_public_ip_cidr* for security reasons. |
 
 
@@ -762,8 +762,8 @@ Wordpress and nginx share the same persistent volume (ReadWriteMany with longhor
 Deploy the resources with:
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/garutilorenzo/k3s-oci-cluster/master/deployments/mariadb/all-resources.yml
-kubectl apply -f https://raw.githubusercontent.com/garutilorenzo/k3s-oci-cluster/master/deployments/wordpress/all-resources.yml
+kubectl apply -f https://raw.githubusercontent.com/AdmiraalA/K3S-OCI/master/deployments/mariadb/all-resources.yml
+kubectl apply -f https://raw.githubusercontent.com/AdmiraalA/K3S-OCI/master/deployments/wordpress/all-resources.yml
 ```
 
 **NOTE** The Wordpress installation is **secured**. To allow external traffic to `/wp-admin`, `/xmlrpc.php` and `wp-login.php` you have to edit the  [deployments/nginx/all-resources.yml](https://github.com/garutilorenzo/k3s-oci-cluster/blob/master/deployments/nginx/all-resources.yml) and change this line:
@@ -776,7 +776,7 @@ kubectl apply -f https://raw.githubusercontent.com/garutilorenzo/k3s-oci-cluster
 with your public ip address CIDR.
 
 ```
-curl -o nginx-all-resources.yml https://raw.githubusercontent.com/garutilorenzo/k3s-oci-cluster/master/deployments/nginx/all-resources.yml
+curl -o nginx-all-resources.yml https://raw.githubusercontent.com/AdmiraalA/K3S-OCI/master/deployments/nginx/all-resources.yml
 
 vi nginx-all-resources.yml
 
@@ -809,9 +809,9 @@ Now you are ready to setup WP, open the LB public ip and follow the wizard. **NO
 To clean the deployed resources:
 
 ```
-kubectl delete -f https://raw.githubusercontent.com/garutilorenzo/k3s-oci-cluster/master/deployments/mariadb/all-resources.yml
-kubectl delete -f https://raw.githubusercontent.com/garutilorenzo/k3s-oci-cluster/master/deployments/nginx/all-resources.yml
-kubectl delete -f https://raw.githubusercontent.com/garutilorenzo/k3s-oci-cluster/master/deployments/wordpress/all-resources.yml
+kubectl delete -f https://raw.githubusercontent.com/AdmiraalA/K3S-OCI/master/deployments/mariadb/all-resources.yml
+kubectl delete -f https://raw.githubusercontent.com/AdmiraalA/K3S-OCI/master/deployments/nginx/all-resources.yml
+kubectl delete -f https://raw.githubusercontent.com/AdmiraalA/K3S-OCI/master/deployments/wordpress/all-resources.yml
 ```
 
 ## Clean up
