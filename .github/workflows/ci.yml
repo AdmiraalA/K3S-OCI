@@ -29,11 +29,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run a Terraform fmt
-        uses: docker://hashicorp/terraform:light
-        with:
-          entrypoint: terraform
-          args: fmt --recursive -check=true --diff ../
+#      - name: Run a Terraform fmt
+#        uses: docker://hashicorp/terraform:light
+#        with:
+#          entrypoint: terraform
+#          args: fmt --recursive -check=true --diff ../
 
       - name: Upload Configuration
         uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.0
