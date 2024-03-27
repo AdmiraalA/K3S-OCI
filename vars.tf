@@ -1,7 +1,12 @@
-variable "my_public_ip_cidr" {
+#variable "my_public_ip_cidr" {
+#  type    = list(string)
+#  default = ["x/32", "y/32"]
+#}
+variable "public_ips" {
   type    = list(string)
-  default = ["x/32", "y/32"]
+  default = ["82.168.9.145/32", "86.85.108.82/32"]
 }
+
 
 variable "private_key" {}
 
