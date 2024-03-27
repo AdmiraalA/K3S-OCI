@@ -243,10 +243,10 @@ variable "expose_kubeapi" {
   type    = bool
   default = false
 }
-variable "cloudflare_zone_id" {
-  description = "The Cloudflare Zone ID"
-  type        = string
-}
+#variable "cloudflare_zone_id" {
+#  description = "The Cloudflare Zone ID"
+#  type        = string
+#}
 #variable "cloudflare_api_key" {}
 #variable "api_token" {}
 #variable "domain" {
