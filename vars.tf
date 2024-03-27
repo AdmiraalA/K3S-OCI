@@ -247,8 +247,8 @@ variable "cloudflare_zone_id" {
   description = "The Cloudflare Zone ID"
   type        = string
 }
-variable "cloudflare_api_key" {}
-variable "api_token" {}
-variable "domain" {
-  description = "The domain name for which DNS records need to be managed"
-}
+#variable "cloudflare_api_key" {}
+#variable "api_token" {}
+#variable "domain" {
+#  description = "The domain name for which DNS records need to be managed"
+#}
